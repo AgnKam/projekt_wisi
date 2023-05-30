@@ -11,7 +11,7 @@ const useGame = () => {
     const [win, setWin] = useState(false);
 
     const hangmanImg = `/images/hangman${6 - remainingGuesses}.png`;
-    const [wins, setWins] = useState(-2); //troche sus bo bylo dwa dodane na poczatku dlatego odjelam
+    const [wins, setWins] = useState(0);
     const [losses, setLosses] = useState(0);
 
     useEffect(() => {
@@ -33,12 +33,13 @@ const useGame = () => {
         return totalGames > 0 ? (wins / totalGames * 100).toFixed(2) : 0;
       };
 
-    const guessLetter = () => {
-    if (word.includes(currentGuess)) {
-      setGuesses((oldGuesses) => [...oldGuesses, currentGuess]);
-    } else {
-      setRemainingGuesses((oldGuesses) => oldGuesses - 1);
-    }
+      const guessLetter = () => {
+        if (word.includes(currentGuess) && !guesses.includes(currentGuess)) {
+          setGuesses((oldGuesses) => [...oldGuesses, currentGuess]);
+        } else if (!word.includes(currentGuess) && !guesses.includes(currentGuess)) {
+          setRemainingGuesses((oldGuesses) => oldGuesses - 1);
+          setGuesses((oldGuesses) => [...oldGuesses, currentGuess]);
+        }
 
     setCurrentGuess('');
   };
@@ -49,11 +50,12 @@ const useGame = () => {
       setLosses((oldLosses) => oldLosses + 1);
     }
 
-    if (word.split('').every((letter) => guesses.includes(letter))) {
-      setGameOver(true);
-      setWin(true);
-      setWins((oldWins) => oldWins + 1);
-    }
+    if (word.length > 0 && word.split('').every((letter) => guesses.includes(letter))) {
+        setGameOver(true);
+        setWin(true);
+        setWins((oldWins) => oldWins + 1);
+      }
+      
   }, [guesses, remainingGuesses]);
 
 
